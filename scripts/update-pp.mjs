@@ -18,7 +18,7 @@ const int = v => v === null || v === undefined || v === '' || !Number.isFinite(N
 
 export function parseEmbedded(html) {
   const a = html.indexOf(START), b = html.indexOf(END);
-  if (a < 0 || b <= a || html.indexOf(START, a + START.length) >= 0) {
+  if (a < 0 || b <= a) {
     throw new Error('Délimiteurs EMBEDDED_DATA absents ou dupliqués');
   }
   const inner = html.slice(a + START.length, b);

@@ -1,0 +1,56 @@
+name: MAJ PP KOTP
+
+on:
+  schedule:
+    # Tous les dimanches, 23 h 59 à Paris, y compris heure d'été / hiver.
+    - cron: '59 23 * * 0'
+      timezone: 'Europe/Paris'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kotp-update-pp
+  cancel-in-progress: false
+
+jobs:
+  update-pp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Récupérer KOTP
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Contrôler les secrets FFB
+        env:
+          FFB_EMAIL: ${{ secrets.FFB_EMAIL }}
+          FFB_PASSWORD: ${{ secrets.FFB_PASSWORD }}
+        run: |
+          if [ -z "$FFB_EMAIL" ] || [ -z "$FFB_PASSWORD" ]; then
+            echo 'Secrets FFB_EMAIL et/ou FFB_PASSWORD manquants.' >&2
+            exit 1
+          fi
+      - name: Tests de sécurité du calcul
+        run: node --test tests/update-pp.test.mjs
+      - name: Actualiser les PP (sans publication partielle)
+        env:
+          FFB_EMAIL: ${{ secrets.FFB_EMAIL }}
+          FFB_PASSWORD: ${{ secrets.FFB_PASSWORD }}
+        run: node scripts/update-pp.mjs index.html
+      - name: Publier le HTML si le contrôle est complet
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          if ! git diff --cached --quiet; then
+            git commit -m 'KOTP: actualisation automatique des PP'
+            git push
+          else
+            echo 'Aucune modification à publier.'
+          fi

@@ -24,3 +24,8 @@ test('un classement FFB complet peut être publié',async()=>{
  const res=await updateDocument(html(),{api:{currentSeason:async()=>({id:38}),ranking:async pid=>({iv:{ppSeason:pid===17?200:1}})},now:'2026-11-01T22:59:00.000Z'});
  assert.equal(res.count,2);assert.equal(parseEmbedded(res.html).data.players[0].pp_total,310);
 });
+
+test('le véritable HTML contient aussi les noms des délimiteurs dans son code',()=>{
+ const nested=html()+'<script>const marker=\'/*__RANKING_STALKING_DATA_START__*/\';</script>';
+ assert.equal(parseEmbedded(nested).data.count,2);
+});

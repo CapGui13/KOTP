@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {readFile} from 'node:fs/promises';
-import { parseEmbedded, serializeEmbedded, applyGains, updateDocument, makeFfbClient } from '../scripts/update-pp.mjs';
+import { parseEmbedded, serializeEmbedded, applyGains, updateDocument, makeFfbClient, renewedForSeason } from '../scripts/update-pp.mjs';
 const data=()=>({mode:'provence',season:{id:38,label:'2026/2027'},count:2,generated_at:'2026-10-31T20:00:00Z',province:{},players:[
   {person_id:17, first_name:'Zoé',last_name:'Z',pp_base:125,pp_withdrawal:-15,pp_gained:5,pp_total:115,ic:89,rank:2},
   {person_id:18, first_name:'Anne',last_name:'A',pp_base:250,pp_withdrawal:-28,pp_gained:10,pp_total:232,ic:95,rank:1}
@@ -41,4 +41,34 @@ test('la page publique reste en lecture seule, sans clé ni connexion',async()=>
  assert.equal(/AIza[0-9A-Za-z_-]{25,}/.test(html),false);
  assert.equal(html.includes('identitytoolkit.googleapis.com'),false);
  assert.equal(html.includes('loginModal'),false);
+});
+
+test('licence renouvelée en saison courante : le joueur redevient visible',async()=>{
+ const h=html().replace('"pp_total":115','"pp_total":115,"license_status":"non_renewed"');
+ const res=await updateDocument(h,{api:{
+   currentSeason:async()=>({id:38}),
+   ranking:async()=>({iv:{ppSeason:4}}),
+   registration:async()=>[{seasonId:38,isLicensee:true}]
+ }});
+ const players=parseEmbedded(res.html).data.players;
+ assert.equal(players[0].license_status,'active');
+});
+test('licence non renouvelée et statut FFB ambigu : rester masqué',async()=>{
+ const h=html().replace('"pp_total":115','"pp_total":115,"license_status":"non_renewed"');
+ const res=await updateDocument(h,{api:{
+   currentSeason:async()=>({id:38}),
+   ranking:async()=>({iv:{ppSeason:4}}),
+   registration:async()=>[{seasonId:37,isLicensee:true},{seasonId:38,isLicensee:false}]
+ }});
+ assert.equal(parseEmbedded(res.html).data.players[0].license_status,'non_renewed');
+ assert.equal(renewedForSeason([{seasonId:38}],38),false);
+});
+test('erreur de consultation de licence : statut masqué conservé',async()=>{
+ const h=html().replace('"pp_total":115','"pp_total":115,"license_status":"non_renewed"');
+ const res=await updateDocument(h,{api:{
+   currentSeason:async()=>({id:38}),
+   ranking:async()=>({iv:{ppSeason:4}}),
+   registration:async()=>{throw new Error('FFB indisponible')}
+ }});
+ assert.equal(parseEmbedded(res.html).data.players[0].license_status,'non_renewed');
 });

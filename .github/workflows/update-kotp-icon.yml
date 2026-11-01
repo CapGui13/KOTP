@@ -38,8 +38,8 @@ jobs:
           index_path = Path("index.html")
           html = index_path.read_text(encoding="utf-8")
           favicon = '<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png?v=kotp-official">'
-          html = re.sub(r'<link\\b(?=[^>]*\\brel\\s*=\\s*["\\\'](?:shortcut icon|icon)["\\\'])[^>]*>\\s*', '', html, flags=re.I)
-          html = re.sub(r'(<head\\b[^>]*>)', lambda m: m.group(1) + '\\n' + favicon + '\\n', html, count=1, flags=re.I)
+          html = re.sub(r"<link[^>]+rel=['\"](?:shortcut icon|icon)['\"][^>]*>", "", html, flags=re.I)
+          html = re.sub(r"(<head\b[^>]*>)", lambda m: m.group(1) + "\n" + favicon + "\n", html, count=1, flags=re.I)
           if favicon not in html:
               raise RuntimeError("Could not locate HTML head to install favicon")
           index_path.write_text(html, encoding="utf-8")

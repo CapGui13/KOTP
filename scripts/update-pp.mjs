@@ -52,10 +52,10 @@ class ApiError extends Error {
   constructor(status, context) { super(`${context}: HTTP ${status}`); this.status = status; }
 }
 
-export async function makeFfbClient({ html, email, password, fetchImpl = fetch, proxy = DEFAULT_PROXY, pause = wait }) {
+export async function makeFfbClient({ email, password, firebaseApiKey = process.env.FFB_FIREBASE_API_KEY, fetchImpl = fetch, proxy = DEFAULT_PROXY, pause = wait }) {
   if (!email || !email.includes('@') || !password) throw new Error('Configurer les secrets FFB_EMAIL (adresse e-mail) et FFB_PASSWORD');
-  const apiKey = html.match(/const FIREBASE_API_KEY\s*=\s*['"]([^'"]+)['"]/)?.[1];
-  if (!apiKey) throw new Error('Clé de connexion Firebase absente de index.html');
+  const apiKey = typeof firebaseApiKey === 'string' ? firebaseApiKey.trim() : '';
+  if (!apiKey) throw new Error('Configurer le secret FFB_FIREBASE_API_KEY dans GitHub Actions');
   let token = '', refreshToken = '', expiry = 0, easi = '';
 
   async function request(url, opts = {}, context = 'API') {

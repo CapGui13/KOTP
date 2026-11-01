@@ -1,6 +1,6 @@
 /* KOTP : page principale toujours recherchée en ligne en priorité.
    Le cache sert uniquement au démarrage hors connexion. */
-const CACHE_VERSION = 'kotp-shell-v1';
+const CACHE_VERSION = 'kotp-shell-v2';
 const APP_ROOT = self.registration.scope;
 const HOME_URL = new URL('./', APP_ROOT).href;
 const ASSETS = ['./', './manifest.webmanifest', './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'];

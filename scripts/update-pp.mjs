@@ -190,7 +190,11 @@ export function applyGains(data, gains, now = new Date().toISOString()) {
   const c = new Intl.Collator('fr', { sensitivity: 'base', numeric: true });
   const disp = r => `${r.first_name || ''} ${r.last_name || ''}`.trim();
   const ranked = [...data.players].sort((a, b) => b.pp_total - a.pp_total || b.pp_base - a.pp_base || c.compare(disp(a), disp(b)));
-  ranked.forEach((row, i) => { row.rank = i + 1; });
+  let visibleRank = 0;
+  ranked.forEach(row => {
+    // Un non-renouvelé reste dans l'archive mais ne prend aucune place au classement.
+    row.rank = row.license_status === 'non_renewed' ? null : ++visibleRank;
+  });
   data.count = data.players.length;
   data.generated_at = now; data.state_updated_at = now;
   data.province = data.province || {};

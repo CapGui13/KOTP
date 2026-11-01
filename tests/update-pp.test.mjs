@@ -72,3 +72,22 @@ test('erreur de consultation de licence : statut masqué conservé',async()=>{
  }});
  assert.equal(parseEmbedded(res.html).data.players[0].license_status,'non_renewed');
 });
+
+test('les licences non renouvelées ne prennent aucun rang et les rangs visibles se suivent',()=>{
+ const d=data();
+ d.players[1].license_status='non_renewed';
+ applyGains(d,new Map([[17,1],[18,200]]),'2026-11-01T23:00:00.000Z');
+ assert.equal(d.players[1].rank,null);
+ assert.equal(d.players[0].rank,1);
+ assert.equal(d.players.length,2);
+});
+test('un joueur redevenu actif retrouve un rang au prochain calcul',()=>{
+ const d=data();
+ d.players[1].license_status='non_renewed';
+ applyGains(d,new Map([[17,1],[18,200]]));
+ assert.equal(d.players[1].rank,null);
+ d.players[1].license_status='active';
+ applyGains(d,new Map([[17,1],[18,200]]));
+ assert.equal(d.players[1].rank,1);
+ assert.equal(d.players[0].rank,2);
+});

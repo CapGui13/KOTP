@@ -10,9 +10,10 @@ Classement de bridge du Comité de Provence — saison 2026/2027, **PP Base ≥ 
 
 ## Configuration (une fois)
 
-1. Ouvrir **Settings → Secrets and variables → Actions → New repository secret** sur ce dépôt. Créer les deux secrets :
+1. Ouvrir **Settings → Secrets and variables → Actions → New repository secret** sur ce dépôt. Créer les trois secrets :
    - `FFB_EMAIL` : adresse e-mail de connexion FFB (pas uniquement un numéro de licence).
    - `FFB_PASSWORD` : mot de passe de connexion FFB.
+   - `FFB_FIREBASE_API_KEY` : clé de configuration Firebase utilisée par la FFB (à recopier depuis ton ancien HTML KOTP local, valeur de `FIREBASE_API_KEY`, sans la publier dans le dépôt).
    Ne jamais écrire ces valeurs dans un fichier, un commit, une issue ou un chat.
 2. Dans **Settings → Pages**, choisir **Deploy from a branch**, branche `main`, dossier `/ (root)`, puis **Save**.
 3. Dans **Settings → Actions → General → Workflow permissions**, s'assurer que GitHub Actions est autorisé à écrire dans le dépôt (le workflow demande `contents: write`).
@@ -29,4 +30,4 @@ Page publique, une fois Pages activé : **https://capgui13.github.io/KOTP/**.
 - `tests/update-pp.test.mjs` : tests sans accès réseau ni identifiants.
 - `index.html` : interface publique avec données intégrées et classements.
 
-Le programme consulte les mêmes API que la version KOTP d'origine via le relais FFB existant. Aucun mot de passe, jeton de session ni adresse e-mail de connexion n'est écrit dans la page publique.
+Le programme consulte les mêmes API que la version KOTP d'origine via le relais FFB existant. Le HTML public est en lecture seule : aucun formulaire de connexion, mot de passe, jeton de session ni clé Firebase ne figure dans son code.\n\n**Alerte GitHub historique :** la clé Firebase figurait dans un ancien commit public. La suppression du HTML actuel ne supprime pas l'historique Git. Les clés API Firebase web sont souvent publiques par conception mais doivent être restreintes côté propriétaire du projet ; les réglages de la clé FFB ne sont pas sous le contrôle de ce dépôt.

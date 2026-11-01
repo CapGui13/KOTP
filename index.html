@@ -37,6 +37,8 @@ body{margin:0;background:var(--bg);font-family:Inter,"Segoe UI",Arial,sans-serif
 .search-reset[hidden]{display:none}
 @media(max-width:760px){.search-toolbar{padding:8px 10px}.search-wrap{flex:1 1 auto}.search-field{font-size:16px}}
 .table-scroll{position:relative;overflow:auto;max-height:calc(100vh - 140px);max-height:calc(100dvh - 140px);background:#fff;overscroll-behavior:contain;scrollbar-gutter:stable}
+/* PC uniquement : un seul ascenseur, à l'intérieur du tableau. */
+@media (min-width:761px){html,body{height:100%;overflow-y:hidden}.page{margin-bottom:0}}
 table{border-collapse:separate;border-spacing:0;width:100%;min-width:900px;font-size:14px;table-layout:fixed}
 thead{position:sticky;top:0;z-index:6;background:white}
 thead th{background:white;color:var(--header);border-bottom:2px solid #85b7d9;padding:10px 11px 9px;text-align:right;font-size:11.5px;text-transform:uppercase;letter-spacing:.46px;font-weight:850;cursor:pointer;white-space:nowrap;box-shadow:0 1px 0 rgba(133,183,217,.28);font-variant-numeric:tabular-nums}

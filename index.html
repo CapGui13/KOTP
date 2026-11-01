@@ -54,6 +54,58 @@ td.ic-cell{text-align:center}
 .province-empty{padding:38px 22px;text-align:center;color:#61768b;line-height:1.55}.province-empty[hidden]{display:none}
 @media(min-width:761px) and (max-width:1100px){.top-context{gap:9px;flex-wrap:wrap}.top-pp-update{font-size:10px;text-align:center}}
 @media(max-width:760px){.topbar-inner{min-height:56px;row-gap:5px}.brand{font-size:17px;overflow:hidden;text-overflow:ellipsis}.top-context{grid-column:1/-1;grid-row:2;justify-self:stretch;justify-content:center;gap:10px;flex-wrap:wrap;padding-bottom:3px}.season-chip{font-size:11px;padding:5px 9px}.top-pp-update{font-size:10px;text-align:center;white-space:normal}.page{padding:0 7px;margin-top:7px}.table-scroll{max-height:calc(100vh - 138px)}}
+
+/* Présentation mobile KOTP : le tableau PC et ses interactions restent inchangés. */
+.mobile-toolbar,.mobile-ranking{display:none}
+@media(max-width:760px){
+  body{overflow-x:hidden}
+  .page{margin-bottom:24px;padding:0 8px}
+  .panel{border:0;border-radius:0;background:transparent;overflow:visible}
+  .search-toolbar{position:sticky;top:0;z-index:20;padding:9px 0 10px;border:0;background:rgba(243,247,251,.97);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .search-field{height:44px;padding-left:38px;padding-right:40px;border-radius:11px;font-size:16px;box-shadow:0 1px 4px rgba(22,47,78,.06)}
+  .search-reset{height:34px;width:34px}
+  .table-scroll{display:none}
+  .mobile-toolbar{display:flex;align-items:center;gap:9px;padding:2px 0 10px;min-width:0}
+  .mobile-count{flex:1;min-width:0;color:#60758a;font-weight:750;font-size:12px;white-space:nowrap}
+  .mobile-sort-label{font-size:12px;color:#637a91;font-weight:750}
+  .mobile-sort-wrap{position:relative;flex:0 1 142px;min-width:110px}
+  .mobile-sort-wrap:after{content:'⌄';position:absolute;right:11px;top:50%;transform:translateY(-56%);pointer-events:none;color:#4b6780;font-size:16px}
+  .mobile-sort-select{appearance:none;-webkit-appearance:none;width:100%;height:39px;padding:0 27px 0 10px;border:1px solid #c5d6e4;border-radius:9px;background:white;color:#274c6e;font:750 12px Inter,"Segoe UI",Arial,sans-serif;outline-offset:2px}
+  .mobile-sort-dir{width:39px;height:39px;flex:0 0 39px;border:1px solid #c5d6e4;border-radius:9px;background:white;color:#285f89;font-size:19px;font-weight:800;cursor:pointer}
+  .mobile-sort-dir:focus-visible,.mobile-sort-select:focus-visible,.mobile-player>summary:focus-visible{outline:2px solid #67a4d0;outline-offset:2px}
+  .mobile-ranking{display:grid;gap:8px;padding-bottom:12px}
+  .mobile-player{border:1px solid #d5e1ec;border-radius:11px;background:#fff;box-shadow:0 1px 5px rgba(27,57,88,.055);overflow:hidden}
+  .mobile-player>summary{display:block;list-style:none;cursor:pointer;padding:12px 12px 10px;touch-action:manipulation}
+  .mobile-player>summary::-webkit-details-marker{display:none}
+  .mobile-primary{display:flex;align-items:center;gap:9px;min-width:0}
+  .mobile-rank{flex:0 0 26px;text-align:center;color:#667e93;font-size:14px;font-weight:850;font-variant-numeric:tabular-nums}
+  .mobile-identity{flex:1;min-width:0;display:block}
+  .mobile-name{display:block;font-size:14px;font-weight:850;line-height:1.3;color:#15263c;overflow-wrap:anywhere}
+  .mobile-name .last{text-transform:uppercase}
+  .mobile-club{display:block;margin-top:3px;color:#657a8e;font-size:11px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mobile-score{flex:0 0 auto;min-width:67px;text-align:right}
+  .mobile-score .total{display:block;font-size:19px;line-height:1.15}
+  .mobile-score-label{display:block;margin-top:3px;color:#718398;font-size:9px;font-weight:850;letter-spacing:.5px}
+  .mobile-secondary{display:grid;grid-template-columns:auto minmax(0,1fr) auto 14px;align-items:center;gap:10px;border-top:1px solid #edf2f6;margin-top:10px;padding-top:9px;color:#536b80;font-size:11px;white-space:nowrap}
+  .mobile-secondary .ic{min-width:0;padding:2px 5px;font-size:10px}
+  .mobile-secondary b{color:#304d67;font-weight:850;font-variant-numeric:tabular-nums}
+  .mobile-secondary .mobile-gained{color:#278060;font-weight:850;font-variant-numeric:tabular-nums}
+  .mobile-secondary .mobile-gained.zero{color:#93a1ae}
+  .mobile-chevron{display:inline-block;color:#748ca2;font-size:17px;font-weight:600;line-height:1;transition:transform .18s ease;transform:rotate(0)}
+  .mobile-player[open] .mobile-chevron{transform:rotate(180deg)}
+  .mobile-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 10px;padding:12px 15px 14px 47px;background:#f8fbfe;border-top:1px solid #e5eef5}
+  .mobile-detail-label{display:block;color:#667e93;font-size:10px;font-weight:700;margin-bottom:4px}
+  .mobile-detail-value{font-size:14px;font-weight:850;color:#304d67;font-variant-numeric:tabular-nums}
+  .mobile-detail-value.positive{color:#2d7d62}
+  .mobile-detail-value.negative{color:#a66f79}
+  .province-empty{background:#fff;border:1px solid #d5e1ec;border-radius:11px}
+}
+@media(max-width:360px){
+  .mobile-sort-label{display:none}
+  .mobile-secondary{gap:7px;font-size:10px}
+  .mobile-player>summary{padding-left:9px;padding-right:9px}
+  .mobile-score .total{font-size:18px}
+}
 </style>
 </head>
 <body>
@@ -69,6 +121,22 @@ td.ic-cell{text-align:center}
     <button type="button" class="search-reset" id="clearSearch" aria-label="Effacer la recherche" title="Effacer la recherche" hidden>×</button>
   </div>
 </div>
+<div class="mobile-toolbar" aria-label="Tri du classement mobile">
+  <span class="mobile-count" id="mobileCount"></span>
+  <label class="mobile-sort-label" for="mobileSort">Tri :</label>
+  <span class="mobile-sort-wrap"><select class="mobile-sort-select" id="mobileSort" aria-label="Trier les joueurs par">
+    <option value="rank">Classement</option>
+    <option value="pp_total">PP Total</option>
+    <option value="pp_gained">PP gagnés</option>
+    <option value="pp_season">Bilan net</option>
+    <option value="pp_base">PP Base</option>
+    <option value="ic">IC</option>
+    <option value="display_name">Joueur</option>
+    <option value="club_name">Club</option>
+  </select></span>
+  <button class="mobile-sort-dir" id="mobileSortDir" type="button" aria-label="Changer le sens du tri">↑</button>
+</div>
+<div class="mobile-ranking" id="mobileRanking" aria-label="Classement des joueurs"></div>
 <div class="table-scroll"><table id="ranking">
 <colgroup><col style="width:52px"><col style="width:270px"><col style="width:220px"><col style="width:78px"><col style="width:98px"><col style="width:100px"><col style="width:100px"><col style="width:110px"></colgroup>
 <thead><tr>
@@ -127,13 +195,49 @@ function rowHtml(r){
  <td class="total ${totalClass(r.pp_total)}">${num(r.pp_total)}</td>
  </tr>`;
 }
+
+function mobileRowHtml(r){
+ const first=esc(r.first_name||''),last=esc(r.last_name||'');
+ const shownName=`${first}${first&&last?' ':''}<span class="last">${last}</span>`;
+ const net=Number(r.pp_season)||0,gained=Number(r.pp_gained)||0;
+ return `<details class="mobile-player">
+  <summary aria-label="Afficher les détails de ${esc(displayName(r))}">
+   <span class="mobile-primary">
+    <span class="mobile-rank">${num(r.rank)}.</span>
+    <span class="mobile-identity"><span class="mobile-name">${shownName}</span><span class="mobile-club" title="${esc(r.club_name)}">${esc(r.club_name)}</span></span>
+    <span class="mobile-score"><strong class="total ${totalClass(r.pp_total)}">${num(r.pp_total)}</strong><span class="mobile-score-label">PP TOTAL</span></span>
+   </span>
+   <span class="mobile-secondary">
+    <span class="ic ${icClass(Number(r.ic)||0)}">IC ${num(r.ic)}</span>
+    <span>Base <b>${num(r.pp_base)}</b></span>
+    <span class="mobile-gained ${gained===0?'zero':''}">Gagnés ${num(r.pp_gained)}</span>
+    <span class="mobile-chevron" aria-hidden="true">⌄</span>
+   </span>
+  </summary>
+  <div class="mobile-details">
+    <div><span class="mobile-detail-label">Bilan net saison</span><span class="mobile-detail-value ${net>0?'positive':net<0?'negative':''}">${seasonFmt(r.pp_season)}</span></div>
+    <div><span class="mobile-detail-label">PP gagnés</span><span class="mobile-detail-value positive">${num(r.pp_gained)}</span></div>
+    <div><span class="mobile-detail-label">PP Base</span><span class="mobile-detail-value">${num(r.pp_base)}</span></div>
+    <div><span class="mobile-detail-label">Indice de classement</span><span class="mobile-detail-value">${num(r.ic)}</span></div>
+  </div>
+ </details>`;
+}
 function render(){
  const words=normalizeSearch(searchInput.value).split(' ').filter(Boolean);
  const visible=words.length?list.filter(r=>{
   const haystack=normalizeSearch(displayName(r)+' '+r.club_name);
   return words.every(word=>haystack.includes(word));
  }):list;
- document.querySelector('#ranking tbody').innerHTML=[...visible].sort(compare).map(rowHtml).join('');
+ const ordered=[...visible].sort(compare);
+ const mobile=window.matchMedia('(max-width:760px)').matches;
+ document.querySelector('#ranking tbody').innerHTML=mobile?'':ordered.map(rowHtml).join('');
+ document.querySelector('#mobileRanking').innerHTML=mobile?ordered.map(mobileRowHtml).join(''):'';
+ document.querySelector('#mobileCount').textContent=visible.length+' joueur'+(visible.length===1?'':'s');
+ document.querySelector('#mobileSort').value=sortKey;
+ const dirButton=document.querySelector('#mobileSortDir');
+ dirButton.textContent=sortDir===1?'↑':'↓';
+ dirButton.title=sortDir===1?'Tri croissant':'Tri décroissant';
+ dirButton.setAttribute('aria-label',dirButton.title+'. Inverser le sens du tri');
  const empty=document.querySelector('#empty');
  empty.hidden=visible.length!==0;
  empty.textContent=words.length?'Aucun joueur ni club correspondant.':'Aucun joueur admissible.';
@@ -149,6 +253,11 @@ function render(){
 function sortBy(key){if(sortKey===key)sortDir*=-1;else{sortKey=key;sortDir=['rank','display_name','club_name'].includes(key)?1:-1}render()}
 function bindActivation(element,fn){element.addEventListener('click',fn);element.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fn()}})}
 document.querySelectorAll('thead th[data-key]').forEach(th=>bindActivation(th,()=>sortBy(th.dataset.key)));
+document.querySelector('#mobileSort').addEventListener('change',e=>sortBy(e.target.value));
+document.querySelector('#mobileSortDir').addEventListener('click',()=>{sortDir*=-1;render()});
+const mobileBreakpoint=window.matchMedia('(max-width:760px)');
+if(mobileBreakpoint.addEventListener)mobileBreakpoint.addEventListener('change',render);
+else mobileBreakpoint.addListener(render);
 searchInput.addEventListener('input',()=>{clearSearch.hidden=!searchInput.value;render()});
 searchInput.addEventListener('keydown',e=>{if(e.key==='Escape'){searchInput.value='';clearSearch.hidden=true;render();}});
 clearSearch.addEventListener('click',()=>{searchInput.value='';clearSearch.hidden=true;render();searchInput.focus();});

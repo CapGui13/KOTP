@@ -17,6 +17,15 @@ body{margin:0;background:var(--bg);font-family:Inter,"Segoe UI",Arial,sans-serif
 .top-pp-update{color:#dce8f4;font-size:11px;font-weight:700;white-space:nowrap;line-height:1.4}
 .page{max-width:1230px;margin:10px auto 40px;padding:0 16px}
 .panel{background:#fff;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.search-toolbar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);background:#f9fbfd}
+.search-wrap{position:relative;flex:0 1 410px;min-width:0}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#71899d;font-size:17px;pointer-events:none}
+.search-field{display:block;width:100%;height:38px;padding:0 36px 0 36px;border:1px solid #bfd0df;border-radius:8px;background:#fff;color:#162238;font:inherit;font-size:13px;outline:none}
+.search-field:focus{border-color:#67a4d0;box-shadow:0 0 0 3px rgba(46,125,185,.12)}
+.search-reset{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:29px;height:29px;border:0;border-radius:6px;background:transparent;color:#71899d;font-size:20px;cursor:pointer}
+.search-reset:hover{background:#edf3f8;color:#2a628d}
+.search-reset[hidden]{display:none}
+@media(max-width:760px){.search-toolbar{padding:8px 10px}.search-wrap{flex:1 1 auto}.search-field{font-size:16px}}
 .table-scroll{position:relative;overflow:auto;max-height:calc(100vh - 104px);background:#fff;overscroll-behavior:contain;scrollbar-gutter:stable}
 table{border-collapse:separate;border-spacing:0;width:100%;min-width:900px;font-size:14px;table-layout:fixed}
 thead{position:sticky;top:0;z-index:6;background:white}
@@ -53,6 +62,13 @@ td.ic-cell{text-align:center}
   <div class="top-context"><div class="season-chip" id="seasonChip">2026/2027</div><span class="top-pp-update" id="lastUpdate">Dernière mise à jour : —</span></div>
 </div></div>
 <main class="page"><section class="panel">
+<div class="search-toolbar">
+  <div class="search-wrap">
+    <span class="search-icon" aria-hidden="true">⌕</span>
+    <input class="search-field" id="playerSearch" type="search" placeholder="Rechercher un joueur ou un club…" aria-label="Rechercher un joueur ou un club" autocomplete="off" spellcheck="false">
+    <button type="button" class="search-reset" id="clearSearch" aria-label="Effacer la recherche" title="Effacer la recherche" hidden>×</button>
+  </div>
+</div>
 <div class="table-scroll"><table id="ranking">
 <colgroup><col style="width:52px"><col style="width:270px"><col style="width:220px"><col style="width:78px"><col style="width:98px"><col style="width:100px"><col style="width:100px"><col style="width:110px"></colgroup>
 <thead><tr>
@@ -84,6 +100,8 @@ const num = v => v === null || v === undefined || v === '' ? '—' : Number(v).t
 const seasonFmt = v => v === null || v === undefined || v === '' ? '—' : Number(v)>0 ? '+'+num(v) : num(v);
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const displayName = r => `${r.first_name || ''} ${r.last_name || ''}`.trim();
+const searchInput=document.querySelector('#playerSearch'),clearSearch=document.querySelector('#clearSearch');
+const normalizeSearch = value => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('fr').replace(/œ/g,'oe').replace(/æ/g,'ae').replace(/[^a-z0-9]+/g,' ').trim();
 const icClass = ic => ic >= 100?'ic100':ic >= 95?'ic95':ic >= 89?'ic89':ic >= 83?'ic83':ic >= 77?'ic77':ic >= 71?'ic71':'ic65';
 const totalClass = total => total === null || total === undefined?'total-grey':Number(total)>=2000?'total-violet':Number(total)>=1000?'total-red':Number(total)>=500?'total-blue':Number(total)>=250?'total-green':Number(total)>=125?'total-yellow':'total-grey';
 const baseComparator=(a,b)=> (Number(b.pp_total)||0)-(Number(a.pp_total)||0) || (Number(b.pp_base)||0)-(Number(a.pp_base)||0) || collator.compare(displayName(a),displayName(b));
@@ -110,8 +128,15 @@ function rowHtml(r){
  </tr>`;
 }
 function render(){
- document.querySelector('#ranking tbody').innerHTML=[...list].sort(compare).map(rowHtml).join('');
- document.querySelector('#empty').hidden=list.length!==0;
+ const words=normalizeSearch(searchInput.value).split(' ').filter(Boolean);
+ const visible=words.length?list.filter(r=>{
+  const haystack=normalizeSearch(displayName(r)+' '+r.club_name);
+  return words.every(word=>haystack.includes(word));
+ }):list;
+ document.querySelector('#ranking tbody').innerHTML=[...visible].sort(compare).map(rowHtml).join('');
+ const empty=document.querySelector('#empty');
+ empty.hidden=visible.length!==0;
+ empty.textContent=words.length?'Aucun joueur ni club correspondant.':'Aucun joueur admissible.';
  document.querySelectorAll('thead th[data-key]').forEach(th=>{
   const active=th.dataset.key===sortKey;
   th.classList.toggle('sort-active',active);
@@ -124,6 +149,9 @@ function render(){
 function sortBy(key){if(sortKey===key)sortDir*=-1;else{sortKey=key;sortDir=['rank','display_name','club_name'].includes(key)?1:-1}render()}
 function bindActivation(element,fn){element.addEventListener('click',fn);element.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fn()}})}
 document.querySelectorAll('thead th[data-key]').forEach(th=>bindActivation(th,()=>sortBy(th.dataset.key)));
+searchInput.addEventListener('input',()=>{clearSearch.hidden=!searchInput.value;render()});
+searchInput.addEventListener('keydown',e=>{if(e.key==='Escape'){searchInput.value='';clearSearch.hidden=true;render();}});
+clearSearch.addEventListener('click',()=>{searchInput.value='';clearSearch.hidden=true;render();searchInput.focus();});
 bindActivation(document.querySelector('#seasonGroupHead'),()=>{sortKey=seasonNext;sortDir=-1;seasonNext=seasonNext==='pp_season'?'pp_gained':'pp_season';render()});
 document.querySelector('#seasonChip').textContent=data.season?.label||'—';
 const at=data.province?.last_pp_update_at||data.generated_at;

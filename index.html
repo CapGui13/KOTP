@@ -102,6 +102,13 @@ td.ic-cell{text-align:center}
   .mobile-secondary .mobile-gained.zero{color:#93a1ae}
   .province-empty{background:#fff;border:1px solid #d5e1ec;border-radius:11px}
 }
+/* iPhone en mode PWA : le bandeau Liquid Glass d'iOS peut brouiller le titre.
+   On abaisse uniquement le contenu du bandeau, sans toucher au navigateur ni au PC. */
+@media (max-width:760px) and (display-mode:standalone) {
+  @supports (-webkit-touch-callout:none) {
+    .topbar-inner { padding-top:32px; }
+  }
+}
 @media(max-width:360px){
   .mobile-sort-label{display:none}
   .mobile-secondary{gap:7px;font-size:10px}

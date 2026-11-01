@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'icons/kotp-official.webp.b64'
+      - '.github/workflows/update-kotp-icon.yml'
   workflow_dispatch:
 
 permissions:
@@ -33,6 +34,16 @@ jobs:
                   base.resize((size, size), Image.Resampling.LANCZOS).save(
                       f"icons/icon-{size}.png", format="PNG", optimize=True
                   )
+          # Make the browser tab icon use the exact same artwork as the PWA.
+          index_path = Path("index.html")
+          html = index_path.read_text(encoding="utf-8")
+          favicon = '<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png?v=kotp-official">'
+          html = re.sub(r'<link\\b(?=[^>]*\\brel\\s*=\\s*["\\\'](?:shortcut icon|icon)["\\\'])[^>]*>\\s*', '', html, flags=re.I)
+          html = re.sub(r'(<head\\b[^>]*>)', lambda m: m.group(1) + '\\n' + favicon + '\\n', html, count=1, flags=re.I)
+          if favicon not in html:
+              raise RuntimeError("Could not locate HTML head to install favicon")
+          index_path.write_text(html, encoding="utf-8")
+
           sw_path = Path("sw.js")
           sw = sw_path.read_text(encoding="utf-8")
           sw = re.sub(r"const CACHE_VERSION = 'kotp-shell-v\d+';",
@@ -43,7 +54,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add icons/icon-180.png icons/icon-192.png icons/icon-512.png sw.js
+          git add icons/icon-180.png icons/icon-192.png icons/icon-512.png sw.js index.html
           if ! git diff --cached --quiet; then
             git commit -m 'KOTP: install official Provence icon for PWA'
             git push origin HEAD:main

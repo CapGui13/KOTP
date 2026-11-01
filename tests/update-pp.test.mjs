@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { parseEmbedded, serializeEmbedded, applyGains, updateDocument } from '../scripts/update-pp.mjs';
+import { parseEmbedded, serializeEmbedded, applyGains, updateDocument, makeFfbClient } from '../scripts/update-pp.mjs';
 const data=()=>({mode:'provence',season:{id:38,label:'2026/2027'},count:2,generated_at:'2026-10-31T20:00:00Z',province:{},players:[
   {person_id:17, first_name:'Zoé',last_name:'Z',pp_base:125,pp_withdrawal:-15,pp_gained:5,pp_total:115,ic:89,rank:2},
   {person_id:18, first_name:'Anne',last_name:'A',pp_base:250,pp_withdrawal:-28,pp_gained:10,pp_total:232,ic:95,rank:1}
@@ -28,4 +28,7 @@ test('un classement FFB complet peut être publié',async()=>{
 test('le véritable HTML contient aussi les noms des délimiteurs dans son code',()=>{
  const nested=html()+'<script>const marker=\'/*__RANKING_STALKING_DATA_START__*/\';</script>';
  assert.equal(parseEmbedded(nested).data.count,2);
+});
+test('la connexion échoue sans clé Firebase injectée par le workflow',async()=>{
+  await assert.rejects(()=>makeFfbClient({email:'test@example.fr',password:'simulation',firebaseApiKey:''}),/FFB_FIREBASE_API_KEY/);
 });

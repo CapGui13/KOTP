@@ -159,7 +159,7 @@ const EMBEDDED_DATA={"schema_version":12,"mode":"provence","season":{"id":38,"la
 const data = EMBEDDED_DATA;
 const collator = new Intl.Collator('fr', {sensitivity:'base',numeric:true});
 const clubNames = new Map((data.province?.club_catalog || []).map(c => [Number(c.id),String(c.name || '')]));
-const list = data.players.filter(p => Number(p.pp_base) >= 125).map(p => ({...p, club_name: p.club_name || clubNames.get(Number(p.club_id)) || '—'}));
+const list = data.players.filter(p => Number(p.pp_base) >= 125 && p.license_status !== 'non_renewed').map(p => ({...p, club_name: p.club_name || clubNames.get(Number(p.club_id)) || '—'}));
 let sortKey = 'rank', sortDir = 1, seasonNext = 'pp_season';
 const num = v => v === null || v === undefined || v === '' ? '—' : Number(v).toLocaleString('fr-FR');
 const seasonFmt = v => v === null || v === undefined || v === '' ? '—' : Number(v)>0 ? '+'+num(v) : num(v);

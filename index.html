@@ -82,11 +82,13 @@ td.ic-cell{text-align:center}
   .mobile-identity{flex:1;min-width:0;display:block}
   .mobile-name{display:block;font-size:14px;font-weight:850;line-height:1.3;color:#15263c;overflow-wrap:anywhere}
   .mobile-name .last{text-transform:uppercase}
+  .mobile-name-ic{display:inline-block;white-space:nowrap;margin-left:4px;vertical-align:1px}
+  .mobile-score-unit{font-size:11px;font-weight:850;vertical-align:1px}
   .mobile-club{display:block;margin-top:3px;color:#657a8e;font-size:11px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .mobile-score{flex:0 0 auto;min-width:67px;text-align:right}
   .mobile-score .total{display:block;font-size:19px;line-height:1.15}
   .mobile-score-label{display:block;margin-top:3px;color:#718398;font-size:9px;font-weight:850;letter-spacing:.5px}
-  .mobile-secondary{display:grid;grid-template-columns:auto minmax(0,1fr) auto 14px;align-items:center;gap:10px;border-top:1px solid #edf2f6;margin-top:10px;padding-top:9px;color:#536b80;font-size:11px;white-space:nowrap}
+  .mobile-secondary{display:grid;grid-template-columns:minmax(0,1fr) auto 14px;align-items:center;gap:10px;border-top:1px solid #edf2f6;margin-top:10px;padding-top:9px;color:#536b80;font-size:11px;white-space:nowrap}
   .mobile-secondary .ic{min-width:0;padding:2px 5px;font-size:10px}
   .mobile-secondary b{color:#304d67;font-weight:850;font-variant-numeric:tabular-nums}
   .mobile-secondary .mobile-gained{color:#278060;font-weight:850;font-variant-numeric:tabular-nums}
@@ -204,12 +206,11 @@ function mobileRowHtml(r){
   <summary aria-label="Afficher les détails de ${esc(displayName(r))}">
    <span class="mobile-primary">
     <span class="mobile-rank">${num(r.rank)}.</span>
-    <span class="mobile-identity"><span class="mobile-name">${shownName}</span><span class="mobile-club" title="${esc(r.club_name)}">${esc(r.club_name)}</span></span>
-    <span class="mobile-score"><strong class="total ${totalClass(r.pp_total)}">${num(r.pp_total)}</strong><span class="mobile-score-label">PP TOTAL</span></span>
+    <span class="mobile-identity"><span class="mobile-name">${shownName} <span class="ic ${icClass(Number(r.ic)||0)} mobile-name-ic">IC ${num(r.ic)}</span></span><span class="mobile-club" title="${esc(r.club_name)}">${esc(r.club_name)}</span></span>
+    <span class="mobile-score"><strong class="total ${totalClass(r.pp_total)}">${num(r.pp_total)} <span class="mobile-score-unit">PP</span></strong></span>
    </span>
    <span class="mobile-secondary">
-    <span class="ic ${icClass(Number(r.ic)||0)}">IC ${num(r.ic)}</span>
-    <span>Base <b>${num(r.pp_base)}</b></span>
+    <span>Abattement <b>${seasonFmt(r.pp_withdrawal)}</b></span>
     <span class="mobile-gained ${gained===0?'zero':''}">Gagnés ${num(r.pp_gained)}</span>
     <span class="mobile-chevron" aria-hidden="true">⌄</span>
    </span>

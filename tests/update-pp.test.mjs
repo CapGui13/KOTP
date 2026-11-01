@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import {readFile} from 'node:fs/promises';
 import { parseEmbedded, serializeEmbedded, applyGains, updateDocument, makeFfbClient } from '../scripts/update-pp.mjs';
 const data=()=>({mode:'provence',season:{id:38,label:'2026/2027'},count:2,generated_at:'2026-10-31T20:00:00Z',province:{},players:[
   {person_id:17, first_name:'Zoé',last_name:'Z',pp_base:125,pp_withdrawal:-15,pp_gained:5,pp_total:115,ic:89,rank:2},
@@ -31,4 +32,13 @@ test('le véritable HTML contient aussi les noms des délimiteurs dans son code'
 });
 test('la connexion échoue sans clé Firebase injectée par le workflow',async()=>{
   await assert.rejects(()=>makeFfbClient({email:'test@example.fr',password:'simulation',firebaseApiKey:''}),/FFB_FIREBASE_API_KEY/);
+});
+
+test('la page publique reste en lecture seule, sans clé ni connexion',async()=>{
+ const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
+ const data=parseEmbedded(html).data;
+ assert.equal(data.players.length,342);
+ assert.equal(/AIza[0-9A-Za-z_-]{25,}/.test(html),false);
+ assert.equal(html.includes('identitytoolkit.googleapis.com'),false);
+ assert.equal(html.includes('loginModal'),false);
 });

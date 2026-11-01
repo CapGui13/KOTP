@@ -143,10 +143,16 @@ export async function makeFfbClient({ email, password, firebaseApiKey = process.
     catch { throw error; }
   }
 
+  async function registration(pid) {
+    // Historique FFB, consulté uniquement pour les licences actuellement masquées.
+    return call('www', `api/persons/${pid}/registrations`);
+  }
+
   await signin();
   return {
     currentSeason: () => call('lancelot', 'seasons/current'),
-    ranking
+    ranking,
+    registration
   };
 }
 
@@ -195,6 +201,28 @@ export function applyGains(data, gains, now = new Date().toISOString()) {
   return data;
 }
 
+/**
+ * Ne démasque un joueur que si la FFB confirme explicitement une licence
+ * active pour la saison courante. Une donnée ambiguë ne change rien.
+ */
+export function renewedForSeason(payload, seasonId) {
+  const sid = Number(seasonId);
+  const records = Array.isArray(payload) ? payload
+    : Array.isArray(payload?.registrations) ? payload.registrations
+    : Array.isArray(payload?.items) ? payload.items
+    : Array.isArray(payload?.data) ? payload.data : [];
+  for (const r of records) {
+    if (!r || typeof r !== 'object') continue;
+    const season = Number(r.seasonId ?? r.season_id ?? r.season?.id);
+    if (season !== sid) continue;
+    if (r.isLicensee === true || r.licensee === true || r.isActive === true ||
+        r.active === true || ['active', 'renewed', 'valid'].includes(String(r.licenseStatus ?? r.license_status ?? r.status ?? '').toLowerCase())) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export async function updateDocument(html, options) {
   const { data } = parseEmbedded(html);
   validate(data);
@@ -219,6 +247,24 @@ export async function updateDocument(html, options) {
   });
   await Promise.all(workers);
   if (gains.size !== ids.length) throw new Error('MAJ incomplète, fichier inchangé');
+  // Vérifier les renouvellements après les PP, mais avant toute publication.
+  // Les erreurs ponctuelles ne rendent jamais un joueur visible par erreur.
+  const masked = data.players.filter(p => p.license_status === 'non_renewed');
+  let renewed = 0, unverified = 0;
+  for (const p of masked) {
+    try {
+      if (typeof api.registration !== 'function') { unverified++; continue; }
+      const registration = await api.registration(Number(p.person_id));
+      if (renewedForSeason(registration, Number(season.id))) {
+        p.license_status = 'active';
+        p.license_verified_at = options.now || new Date().toISOString();
+        renewed++;
+      }
+    } catch {
+      unverified++;
+    }
+  }
+  console.log(`Licences masquées vérifiées : ${masked.length}, renouvelées : ${renewed}, indisponibles : ${unverified}`);
   applyGains(data, gains, options.now || new Date().toISOString());
   return { html: serializeEmbedded(html, data), count: gains.size, generated_at: data.generated_at };
 }

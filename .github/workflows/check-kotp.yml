@@ -1,0 +1,25 @@
+name: Vérification KOTP
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'scripts/update-pp.mjs'
+      - 'tests/update-pp.test.mjs'
+      - '.github/workflows/check-kotp.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Tests du KOTP
+        run: node --test tests/update-pp.test.mjs

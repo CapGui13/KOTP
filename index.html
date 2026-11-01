@@ -120,13 +120,8 @@ td.ic-cell{text-align:center}
   <label class="mobile-sort-label" for="mobileSort">Tri :</label>
   <span class="mobile-sort-wrap"><select class="mobile-sort-select" id="mobileSort" aria-label="Trier les joueurs par">
     <option value="rank">Classement</option>
-    <option value="pp_total">PP Total</option>
-    <option value="pp_gained">PP gagnés</option>
-    <option value="pp_season">Bilan net</option>
-    <option value="pp_base">PP Base</option>
     <option value="ic">IC</option>
-    <option value="display_name">Joueur</option>
-    <option value="club_name">Club</option>
+    <option value="pp_gained">PP gagnés</option>
   </select></span>
   <button class="mobile-sort-dir" id="mobileSortDir" type="button" aria-label="Changer le sens du tri">↑</button>
 </div>
@@ -209,6 +204,7 @@ function mobileRowHtml(r){
  </div>`;
 }
 function render(){
+ if(window.matchMedia('(max-width:760px)').matches && !['rank','ic','pp_gained'].includes(sortKey)){sortKey='rank';sortDir=1;}
  const words=normalizeSearch(searchInput.value).split(' ').filter(Boolean);
  const visible=words.length?list.filter(r=>{
   const haystack=normalizeSearch(displayName(r)+' '+r.club_name);

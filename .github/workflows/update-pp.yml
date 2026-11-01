@@ -31,9 +31,10 @@ jobs:
         env:
           FFB_EMAIL: ${{ secrets.FFB_EMAIL }}
           FFB_PASSWORD: ${{ secrets.FFB_PASSWORD }}
+          FFB_FIREBASE_API_KEY: ${{ secrets.FFB_FIREBASE_API_KEY }}
         run: |
-          if [ -z "$FFB_EMAIL" ] || [ -z "$FFB_PASSWORD" ]; then
-            echo 'Secrets FFB_EMAIL et/ou FFB_PASSWORD manquants.' >&2
+          if [ -z "$FFB_EMAIL" ] || [ -z "$FFB_PASSWORD" ] || [ -z "$FFB_FIREBASE_API_KEY" ]; then
+            echo 'Secrets FFB_EMAIL, FFB_PASSWORD ou FFB_FIREBASE_API_KEY manquants.' >&2
             exit 1
           fi
       - name: Tests de sécurité du calcul
@@ -42,6 +43,7 @@ jobs:
         env:
           FFB_EMAIL: ${{ secrets.FFB_EMAIL }}
           FFB_PASSWORD: ${{ secrets.FFB_PASSWORD }}
+          FFB_FIREBASE_API_KEY: ${{ secrets.FFB_FIREBASE_API_KEY }}
         run: node scripts/update-pp.mjs index.html
       - name: Publier le HTML si le contrôle est complet
         run: |

@@ -3,6 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#172b4d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="KOTP">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png">
 <title>KOTP - King Of The Provence — 2026/2027</title>
 <meta name="description" content="Classement PP Provence – King Of The Provence">
 <style>
@@ -250,6 +258,14 @@ const date=at?new Date(at):null;
 const when=date&&!Number.isNaN(date.getTime()) ? date.toLocaleDateString('fr-FR',{timeZone:'Europe/Paris'})+' à '+date.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Paris'}) : '—';
 document.querySelector('#lastUpdate').textContent='Dernière mise à jour : '+when;
 render();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js', { scope: './', updateViaCache: 'none' })
+      .catch(() => { /* Le classement en ligne reste utilisable sans installation. */ });
+  });
+}
 </script>
 </body>
 </html>

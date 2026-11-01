@@ -30,4 +30,6 @@ Page publique, une fois Pages activé : **https://capgui13.github.io/KOTP/**.
 - `tests/update-pp.test.mjs` : tests sans accès réseau ni identifiants.
 - `index.html` : interface publique avec données intégrées et classements.
 
-Le programme consulte les mêmes API que la version KOTP d'origine via le relais FFB existant. Le HTML public est en lecture seule : aucun formulaire de connexion, mot de passe, jeton de session ni clé Firebase ne figure dans son code.\n\n**Alerte GitHub historique :** la clé Firebase figurait dans un ancien commit public. La suppression du HTML actuel ne supprime pas l'historique Git. Les clés API Firebase web sont souvent publiques par conception mais doivent être restreintes côté propriétaire du projet ; les réglages de la clé FFB ne sont pas sous le contrôle de ce dépôt.
+Le programme consulte les mêmes API que la version KOTP d'origine via le relais FFB existant. Le HTML public est en lecture seule : aucun formulaire de connexion, mot de passe, jeton de session ni clé Firebase ne figure dans son code.
+
+**Alerte GitHub historique :** la clé Firebase figurait dans un ancien commit public. La suppression du HTML actuel ne supprime pas l'historique Git. Les clés API Firebase web sont souvent publiques par conception mais doivent être restreintes côté propriétaire du projet ; les réglages de la clé FFB ne sont pas sous le contrôle de ce dépôt.

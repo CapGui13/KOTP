@@ -2,8 +2,8 @@ name: MAJ PP KOTP
 
 on:
   schedule:
-    # Tous les dimanches, 23 h 59 à Paris, y compris heure d'été / hiver.
-    - cron: '59 23 * * 0'
+    # Tous les dimanches, 20 h 00 à Paris, y compris heure d'été / hiver.
+    - cron: '0 20 * * 0'
       timezone: 'Europe/Paris'
   workflow_dispatch:
 

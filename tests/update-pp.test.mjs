@@ -26,6 +26,23 @@ test('un classement FFB complet peut être publié',async()=>{
  assert.equal(res.count,2);assert.equal(parseEmbedded(res.html).data.players[0].pp_total,310);
 });
 
+test('ajustement PP négatif FFB accepté si le total concorde',async()=>{
+ const result=await updateDocument(html(),{api:{
+   currentSeason:async()=>({id:38}),
+   ranking:async pid=>pid===17?{iv:{ppSeason:-4,ppTotal:106}}:{iv:{ppSeason:1,ppTotal:223}}
+ }});
+ const joueur=parseEmbedded(result.html).data.players.find(p=>p.person_id===17);
+ assert.equal(joueur.pp_gained,-4);
+ assert.equal(joueur.pp_total,106);
+ assert.equal(joueur.pp_season,-19);
+});
+test('ajustement PP négatif FFB rejeté si le total ne concorde pas',async()=>{
+ await assert.rejects(()=>updateDocument(html(),{api:{
+   currentSeason:async()=>({id:38}),
+   ranking:async pid=>pid===17?{iv:{ppSeason:-4,ppTotal:999}}:{iv:{ppSeason:1,ppTotal:223}}
+ }}),/non confirmés par le total FFB/);
+});
+
 test('le véritable HTML contient aussi les noms des délimiteurs dans son code',()=>{
  const nested=html()+'<script>const marker=\'/*__RANKING_STALKING_DATA_START__*/\';</script>';
  assert.equal(parseEmbedded(nested).data.count,2);

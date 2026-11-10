@@ -178,9 +178,9 @@ export function applyGains(data, gains, now = new Date().toISOString()) {
   for (const r of data.players) {
     const base = int(r.pp_base), withdrawal = int(r.pp_withdrawal);
     const gained = int(gains.get(Number(r.person_id)));
-    if (gained === null || gained < 0) throw new Error('PP gagnés absents/incohérents pour un joueur');
+    if (gained === null) throw new Error('PP de saison absents/incohérents pour un joueur');
     const total = base + withdrawal + gained;
-    if (!Number.isSafeInteger(total)) throw new Error('PP Total invalide');
+    if (!Number.isSafeInteger(total) || total < 0) throw new Error('PP Total invalide');
     r.pp_gained = gained;
     r.pp_season = withdrawal + gained;
     r.pp_total = total;
@@ -243,7 +243,18 @@ export async function updateDocument(html, options) {
       const pid = ids[i++];
       const rank = await api.ranking(pid, Number(season.id));
       const gained = int(rank?.iv?.ppSeason);
-      if (gained === null || gained < 0) throw new Error(`PP gagnés invalides/indisponibles : personne ${pid}`);
+      if (gained === null) throw new Error(`PP de saison invalides/indisponibles : personne ${pid}`);
+      if (gained < 0) {
+        // La FFB peut publier un ajustement négatif. Ne l'accepter que si
+        // son total officiel confirme la somme base + abattement + saison.
+        const joueur = data.players.find(p => Number(p.person_id) === pid);
+        const expectedTotal = Number(joueur.pp_base) + Number(joueur.pp_withdrawal) + gained;
+        const ffbTotal = int(rank?.iv?.ppTotal);
+        if (!Number.isSafeInteger(expectedTotal) || expectedTotal < 0 || ffbTotal !== expectedTotal) {
+          throw new Error(`PP saison négatifs non confirmés par le total FFB : personne ${pid}`);
+        }
+        console.log(`PP saison négatifs confirmés FFB : personne ${pid}, ${gained} PP`);
+      }
       gains.set(pid, gained);
       success++;
       if (success % 50 === 0 || success === ids.length) console.log(`PP vérifiés : ${success}/${ids.length}`);

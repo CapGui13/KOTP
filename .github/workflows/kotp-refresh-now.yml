@@ -57,7 +57,10 @@ jobs:
               rootKeys: rank && typeof rank === 'object' ? Object.keys(rank).slice(0,30) : [],
               ivKeys: iv && typeof iv === 'object' ? Object.keys(iv).slice(0,40) : [],
               ppSeasonType: typeof iv?.ppSeason,
-              ppSeasonValue: iv?.ppSeason ?? null
+              ppSeasonValue: iv?.ppSeason ?? null,
+              ppTotal: iv?.ppTotal ?? null,
+              pp: iv?.pp ?? null,
+              ppWithdrawal: iv?.ppWithdrawal ?? null
             }));
           } catch(e) {
             console.log('Diagnostic FFB sans valeur : '+String(e?.message||e).slice(0,130));

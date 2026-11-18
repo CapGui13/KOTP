@@ -119,6 +119,44 @@ td.ic-cell{text-align:center}
   .mobile-card-main{padding-left:9px;padding-right:9px}
   .mobile-score .total{font-size:18px}
 }
+
+/* Projet pilote responsive : enrichissement des fiches mobiles, sans effet sur le tableau PC. */
+@media(max-width:760px){
+  .mobile-count{white-space:normal;line-height:1.3}
+  .mobile-sort-wrap{flex:0 1 156px;min-width:111px}
+  .mobile-sort-select{height:44px;font-size:13px}
+  .mobile-sort-dir{width:44px;height:44px;flex-basis:44px}
+  .mobile-card-main{padding:12px 13px 10px}
+  .mobile-name{font-size:clamp(14px,3.9vw,16px)}
+  .mobile-score .total{font-size:clamp(19px,5.15vw,23px)}
+  .mobile-secondary{grid-template-columns:repeat(2,minmax(0,1fr));white-space:normal;gap:8px}
+  .mobile-secondary>span:last-child{text-align:right}
+  .mobile-card-details{margin-top:10px;border-top:1px solid #e5edf4}
+  .mobile-card-details>summary{min-height:40px;padding:8px 0 0;display:flex;align-items:center;justify-content:space-between;gap:8px;color:#286c9b;font-size:12px;font-weight:850;cursor:pointer;list-style:none}
+  .mobile-card-details>summary::-webkit-details-marker{display:none}
+  .mobile-card-details>summary::after{content:'⌄';font-size:20px;line-height:1;transition:transform .15s ease}
+  .mobile-card-details[open]>summary::after{transform:rotate(180deg)}
+  .mobile-card-details>summary:focus-visible{outline:2px solid #67a4d0;outline-offset:3px;border-radius:4px}
+  .mobile-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:8px 0 4px}
+  .mobile-detail-item{min-width:0;display:flex;flex-direction:column;gap:3px;padding:8px 10px;border:1px solid #e2eaf2;border-radius:8px;background:#f6f9fc}
+  .mobile-detail-item>span{color:#647d94;font-size:11px;font-weight:700}
+  .mobile-detail-item>strong{color:#2f4b66;font-size:15px;font-weight:850;font-variant-numeric:tabular-nums}
+  .mobile-detail-item>strong.positive{color:#2d7d62}
+  .mobile-detail-item>strong.negative{color:#a66f79}
+  .mobile-detail-item>strong.zero{color:#9aa8b5}
+  .mobile-detail-item>strong.total{font-size:17px}
+  .mobile-detail-total{grid-column:1/-1}
+  .mobile-detail-club{grid-column:1/-1;min-width:0;padding:4px 2px;color:#556e83;font-size:11px;overflow-wrap:anywhere}
+}
+@media(max-width:360px){
+  .mobile-toolbar{gap:6px}
+  .mobile-card-main{padding-left:9px;padding-right:9px}
+  .mobile-primary{gap:6px}
+  .mobile-rank{flex-basis:24px}
+  .mobile-score{min-width:0}
+  .mobile-secondary{gap:5px;font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){.mobile-card-details>summary::after{transition:none}}
 </style>
 </head>
 <body>
@@ -139,8 +177,13 @@ td.ic-cell{text-align:center}
   <label class="mobile-sort-label" for="mobileSort">Tri :</label>
   <span class="mobile-sort-wrap"><select class="mobile-sort-select" id="mobileSort" aria-label="Trier les joueurs par">
     <option value="rank">Classement</option>
-    <option value="ic">IC</option>
+    <option value="pp_total">PP total</option>
     <option value="pp_gained">PP gagnés</option>
+    <option value="pp_season">Bilan net</option>
+    <option value="pp_base">PP de base</option>
+    <option value="ic">IC</option>
+    <option value="display_name">Nom du joueur</option>
+    <option value="club_name">Club</option>
   </select></span>
   <button class="mobile-sort-dir" id="mobileSortDir" type="button" aria-label="Changer le sens du tri">↑</button>
 </div>
@@ -207,23 +250,33 @@ function rowHtml(r){
 function mobileRowHtml(r){
  const first=esc(r.first_name||''),last=esc(r.last_name||'');
  const shownName=`${first}${first&&last?' ':''}<span class="last">${last}</span>`;
- const gained=Number(r.pp_gained)||0;
- return `<div class="mobile-player">
+ const gained=Number(r.pp_gained)||0, net=Number(r.pp_season)||0;
+ return `<article class="mobile-player">
   <div class="mobile-card-main">
-   <span class="mobile-primary">
+   <div class="mobile-primary">
     <span class="mobile-rank">${num(r.rank)}.</span>
     <span class="mobile-identity"><span class="mobile-name">${shownName} <span class="ic ${icClass(Number(r.ic)||0)} mobile-name-ic">IC ${num(r.ic)}</span></span><span class="mobile-club" title="${esc(r.club_name)}">${esc(r.club_name)}</span></span>
     <span class="mobile-score"><strong class="total ${totalClass(r.pp_total)}">${num(r.pp_total)} <span class="mobile-score-unit">PP</span></strong></span>
-   </span>
-   <span class="mobile-secondary">
+   </div>
+   <div class="mobile-secondary">
+    <span>Gagnés <b class="mobile-gained ${gained===0?'zero':''}">${num(r.pp_gained)}</b></span>
     <span>Abattement <b>${seasonFmt(r.pp_withdrawal)}</b></span>
-    <span class="mobile-gained ${gained===0?'zero':''}">Gagnés ${num(r.pp_gained)}</span>
-   </span>
+   </div>
+   <details class="mobile-card-details">
+    <summary>Détail des points</summary>
+    <div class="mobile-detail-grid">
+     <div class="mobile-detail-item"><span>PP de base</span><strong>${num(r.pp_base)}</strong></div>
+     <div class="mobile-detail-item"><span>Abattement</span><strong>${seasonFmt(r.pp_withdrawal)}</strong></div>
+     <div class="mobile-detail-item"><span>PP gagnés</span><strong>${num(r.pp_gained)}</strong></div>
+     <div class="mobile-detail-item"><span>Bilan net</span><strong class="season ${net>0?'positive':net<0?'negative':'zero'}">${seasonFmt(r.pp_season)}</strong></div>
+     <div class="mobile-detail-item mobile-detail-total"><span>PP total</span><strong class="total ${totalClass(r.pp_total)}">${num(r.pp_total)}</strong></div>
+     <div class="mobile-detail-club"><b>Club :</b> ${esc(r.club_name)}</div>
+    </div>
+   </details>
   </div>
- </div>`;
+ </article>`;
 }
 function render(){
- if(window.matchMedia('(max-width:760px)').matches && !['rank','ic','pp_gained'].includes(sortKey)){sortKey='rank';sortDir=1;}
  const words=normalizeSearch(searchInput.value).split(' ').filter(Boolean);
  const visible=words.length?list.filter(r=>{
   const haystack=normalizeSearch(displayName(r)+' '+r.club_name);
